@@ -1,10 +1,15 @@
 #include <stdio.h>
-#define TAX 23
+#define EOL '\n'
+
+/*
+pointer is a variable that contains an adress of another variable and can instantly get the access to the value of this variable using the adress
+*/
 
 /*
 Here I am learning  what pointers are and how to work with them
 */
-void  main (void) {
+void  main (void) 
+{
     // declaring and initializing variables
   char one = 1;
   char two = 2;
@@ -43,4 +48,5 @@ void  main (void) {
   *fivePointer = 50;
   //getting to know the result variables(according to logic they seem to be changed because of altering value of pointers)
   printf(" *onePointer = %i\r\n *twoPointer = %i\r\n *threePointer = %i\r\n *fourPointer = %i\r\n *fivePointer = %i\r\n", one, two, three, four, five);
+  printf(" 0x%x%c 0x%x%c 0x%x%c", onePointer, EOL, twoPointer, EOL, threePointer, EOL);
 }
