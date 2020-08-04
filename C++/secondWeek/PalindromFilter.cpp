@@ -4,21 +4,14 @@
 
 using namespace std;
 
-vector<string> PalindromFilter(vector<string> words, int minLength) {
-    vector<string> filtered;
-    for (int i = 0; i < words.size(); i++)
-    {
-        if (words[i].size() < minLength) continue;
-        else {
-            bool flag = false;
-            flag = IsPalindrom(words[i]);
-            if (flag == true) filtered.push_back(words[i]);
-        }
-    }
-    return filtered;
-}
-
-//функция правильно написана, поэтому ошибка не в ней
+/*
+Напишите функцию, которая
+    -называется PalindromFilter
+    -возвращает vector<string>
+    -принимает vector<string> words и int minLength и возвращает все строки из вектора words, 
+    которые являются палиндромами и имеют длину не меньше minLength
+***Входной вектор содержит не более 100 строк, длина каждой строки не больше 100 символов.***
+*/
 bool IsPalindrom(string str) {
     if (str == "") return true;
     else if (str.size() == 1) return true;
@@ -31,10 +24,25 @@ bool IsPalindrom(string str) {
          return true;
     }
 }
-//fix bugs
-// что-то не так с вектором и вызовом функции
+
+vector<string> PalindromFilter(vector<string> words, int minLength) {
+    vector<string> filtered;
+    for (auto word: words)
+    {
+        if (word.size() < minLength) continue;
+        else {
+            bool flag = false;
+            flag = IsPalindrom(word);
+            if (flag == true) filtered.push_back(word);
+        }
+    }
+    return filtered;
+}
+
+
 int main() {
-    vector<string> palindromArray{"abacaba", "aba"};
-    cout << PalindromFilter(palindromArray, 5) << endl;
+    vector<string> palindromArray{"weew", "bro", "code"};
+    vector<string> filteredVector = PalindromFilter(palindromArray, 2);
+    for (auto s: filteredVector) cout << s << " ";
     return 0;
 }
