@@ -49,7 +49,9 @@ WORRY_COUNT: узнать количество беспокоящихся люд
 */
 int worryCount(vector<bool>& queue) {
     int worryCount = 0; 
-    for (auto i: queue) if (i == true) worryCount++;
+    for (auto i: queue) {
+        if (i == true) worryCount++;
+    }
     return worryCount;
 }
 
@@ -58,21 +60,25 @@ void worry(vector<bool>& queue, int index) {
     queue[index] = true;
 }
 
+void quiet(vector<bool>& queue, int index) {
+    queue[index] = false;
+}
 void come(vector<bool>& queue, int index) {
     int len = queue.size();
     if (index < 0) {
-        queue.resize(len - index);
+        queue.resize(len + index);
         
     }
     else {
         for (int i = 0; i < index; i++) {
             queue.push_back(false);
         }
-    } 
+    }  
 }
 
-void printVector(vector<bool> v) {
+void printVector(vector<bool>& v) {
     for (auto i: v) cout << i << " ";
+    cout << endl;
 }
 
 int main(int argc, const char** argv) {
@@ -92,8 +98,13 @@ int main(int argc, const char** argv) {
             worry(queue, atoi(stringIndex.c_str()));
         }
         else if (condition == "WORRY_COUNT") {
-            cout << worryCount << endl;
+            cout << worryCount(queue) << endl;
         }
+        else if (condition == "QUIET") {
+            cin >> stringIndex;
+            quiet(queue, atoi(stringIndex.c_str()));
+        }
+        //printVector(queue);
     }
     return 0;
 }   
