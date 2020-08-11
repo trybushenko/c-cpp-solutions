@@ -76,13 +76,19 @@ void add(vector<string>& affairs, int index, string task) {
 }
 
 string dump(vector<string> affairs, int index) {
-    int quantityOfTasks = 0;
-    for (int i = 0; affairs[index - 1][i] != '\0'; i++)
-    {
-        if (affairs[index - 1][i] == ' ') quantityOfTasks++; 
+    int quantityOfTasks;
+    if (affairs[index - 1].length() == 0) {
+        quantityOfTasks = 0;
+        return to_string(quantityOfTasks);
     }
-    quantityOfTasks++;
+    else {
+        quantityOfTasks = 0;
+        for (int i = 0; affairs[index - 1][i] != '\0'; i++) {
+        if (affairs[index - 1][i] == ' ') quantityOfTasks++; 
+        }
+        quantityOfTasks++;
     return to_string(quantityOfTasks) + " " + affairs[index - 1];
+    }
 }
 
 void printVector(vector<string> affairs) {
@@ -92,16 +98,7 @@ void printVector(vector<string> affairs) {
 
 void next(vector<string>& affairs, int numberOfDays) {
     string blankLine = " ";
-    if  (affairs.size() > numberOfDays) {
-        for (int i = numberOfDays; i < affairs.size(); i++) {
-            if (affairs[numberOfDays].length() == 0) if (affairs[i].length() != 0) affairs[numberOfDays] = affairs[i];
-            else affairs[numberOfDays] += blankLine + affairs[i];
-        }
-        affairs.resize(numberOfDays);
-    }
-    else {
-        affairs.resize(numberOfDays);
-    }
+     
 }
 int main() {
     int q;
