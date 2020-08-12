@@ -37,10 +37,14 @@ task: Напишите функцию BuildMapValuesSet, принимающую 
 */
 
 set<string> BuildMapValuesSet(const map<int, string>& m) {
-    
+    set<string> result;
+    for (auto kv : m) result.insert(kv.second);
+    return result;
 }
 
 int main(int argc, const char** argv) {
-    
+    map<int, string> m = {{1, "asd"}, {2, "qwe"}, {3, "zxc"}, {4, "zxc"}};
+    set<string> sett = BuildMapValuesSet(m);
+    for (auto str : sett) cout << str << " ";
     return 0;
 }
