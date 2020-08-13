@@ -62,65 +62,66 @@ NEXT - Перейти к списку дел на новый месяц.
     0
     2 WalkPreparations Walk
     3 WalkPreparations Walk Payment
+
+Ввод:
+    5
+    ADD 31 Jan_31
+    ADD 30 Jan_30
+    ADD 29 Jan_29
+    NEXT
+    DUMP 28
+Вывод: 
+    3 Jan_31 Jan_30 Jan_29
+
 */
 
-void add(vector<string>& affairs, int index, string task) {
-    string blankLine = " ";
-    if (affairs[index - 1].length() == 0) {
-        affairs[index - 1] = task;
-    }
-    else {
-        affairs[index - 1] += blankLine + task;
-    }
-    
+
+void add(vector<vector<string>>& affairs, int index, string task) {
+    affairs[index - 1].push_back(task);
 }
 
-string dump(vector<string> affairs, int index) {
-    int quantityOfTasks;
-    if (affairs[index - 1].length() == 0) {
-        quantityOfTasks = 0;
-        return to_string(quantityOfTasks);
-    }
-    else {
-        quantityOfTasks = 0;
-        for (int i = 0; affairs[index - 1][i] != '\0'; i++) {
-        if (affairs[index - 1][i] == ' ') quantityOfTasks++; 
-        }
-        quantityOfTasks++;
-    return to_string(quantityOfTasks) + " " + affairs[index - 1];
-    }
+
+void dump(vector<vector<string>> affairs, int index) {
+    int quantity = affairs[index - 1].size();
+    cout << quantity << " ";
+    for (auto str: affairs[index - 1]) cout << str << " ";
+    cout << '\n'; 
 }
+
 
 void printVector(vector<string> affairs) {
-    for (auto str: affairs) cout << str << " ";
+    for (int i = 0; i < affairs.size(); i++) cout << affairs[i] << "< this was iteration number " << i << endl;
 }
 
-
-void next(vector<string>& affairs, int numberOfDays) {
-    string blankLine = " ";
      
-}
 int main() {
     int q;
     cin >> q;
     vector<int> numberOfDays{31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
     int currentMonth = 0;
-    vector<string> affairs;
-    affairs.resize(numberOfDays[currentMonth]);
-    string condition, stringIndex, task;
+    vector<vector<string>> affairs(numberOfDays[currentMonth]);
+    string condition;
     for (int i = 0; i < q; i++) {
         cin >> condition;
+        if (currentMonth > 11) currentMonth = 0;
         if (condition == "ADD") {
-            cin >> stringIndex >> task;
-            add(affairs, atoi(stringIndex.c_str()), task);
+            string task;
+            int index;
+            cin >> index >> task;
+            add(affairs, index, task);
         }
         else if (condition == "DUMP") {
-            cin >> stringIndex;
-            cout << dump(affairs, atoi(stringIndex.c_str())) << endl;
+            int index;
+            cin >> index;
+            dump(affairs, index);
         }
         else if (condition == "NEXT") {
-            currentMonth++;
-            next(affairs, numberOfDays[currentMonth]);
+            if (numberOfDays[currentMonth % 12] > numberOfDays[(currentMonth + 1) % 12]) {
+                for (int i = numberOfDays[(currentMonth + 1)% 12]; i < affairs.size(); ++i) {
+                    affairs[numberOfDays[(currentMonth + 1) % 12] - 1].insert(end(affairs[numberOfDays[(currentMonth + 1) % 12] - 1]), begin(affairs[i]), end(affairs[i]));
+                }
+            }
+            affairs.resize(numberOfDays[++currentMonth % 12]);
         }
     }
     return 0;
