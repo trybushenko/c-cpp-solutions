@@ -48,6 +48,10 @@ task: Слова называются анаграммами друг друга
 */
 
 void BuildCharCounters(const string& word1,const string& word2) {
+    if (word1.length() != word2.length()) {
+        cout << "NO" << endl;
+        return;
+    }
     map<char, int> mapWord1, mapWord2;
     for (auto ch: word1) mapWord1[ch] = count(word1.begin(), word1.end(), ch);
     for (auto ch: word2) mapWord2[ch] = count(word2.begin(), word2.end(), ch);
