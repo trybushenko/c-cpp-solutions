@@ -108,7 +108,7 @@ task: Реализуйте систему хранения автобусных 
             Stop Troparyovo: 950 
             Stop Kokoshkino: no interchange
             Stop Marushkino: 32 32K 
-            Stop Vnukovo: 272 32 32K 
+            Stop Vnukovo: 32 32K 272 
             Stop Peredelkino: 32K 
             Stop Solntsevo: 32K 
             Stop Troparyovo: 272 
@@ -173,12 +173,12 @@ int main() {
                 for (auto stopOfTheBus: busStopsMap[bus]) {
                     cout << "Stop " << stopOfTheBus << ": ";
                     flag = false;
-                    for (auto kv: busStopsMap) {
-                        if (kv.first == bus) continue;
+                    for (auto kv: sequenceOfBusesByAdding) {
+                        if (kv == bus) continue;
                         else {
-                            for (auto stopsOfTheBuses: kv.second) {
+                            for (auto stopsOfTheBuses: busStopsMap[kv]) {
                                 if (stopOfTheBus == stopsOfTheBuses) {
-                                    cout << kv.first << " ";
+                                    cout << kv << " ";
                                     flag = true;
                                 }
                             }
