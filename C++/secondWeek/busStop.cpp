@@ -73,6 +73,48 @@ task: Реализуйте систему хранения автобусных 
             Bus 32: Tolstopaltsevo Marushkino Vnukovo
             Bus 32K: Tolstopaltsevo Marushkino Vnukovo Peredelkino Solntsevo Skolkovo
             Bus 950: Kokoshkino Marushkino Vnukovo Peredelkino Solntsevo Troparyovo
+
+        Input:
+            9
+            NEW_BUS 32 3 Tolstopaltsevo Marushkino Vnukovo
+            NEW_BUS 32K 6 Tolstopaltsevo Marushkino Vnukovo Peredelkino Solntsevo Skolkovo
+            NEW_BUS 950 6 Kokoshkino Marushkino Vnukovo Peredelkino Solntsevo Troparyovo
+            NEW_BUS 272 4 Vnukovo Moskovsky Rumyantsevo Troparyovo
+            STOPS_FOR_BUS 272
+            STOPS_FOR_BUS 950
+            BUSES_FOR_STOP Marushkino
+            BUSES_FOR_STOP Vnukovo
+            BUSES_FOR_STOP Solntsevo
+
+        Correct output:
+            Stop Vnukovo: 32 32K 950
+            Stop Moskovsky: no interchange
+            Stop Rumyantsevo: no interchange
+            Stop Troparyovo: 950
+            Stop Kokoshkino: no interchange
+            Stop Marushkino: 32 32K
+            Stop Vnukovo: 32 32K 272
+            Stop Peredelkino: 32K
+            Stop Solntsevo: 32K
+            Stop Troparyovo: 272
+            32 32K 950
+            32 32K 950 272
+            32K 950
+
+        My output:
+            Stop Vnukovo: 32 32K 950 
+            Stop Moskovsky: no interchange
+            Stop Rumyantsevo: no interchange
+            Stop Troparyovo: 950 
+            Stop Kokoshkino: no interchange
+            Stop Marushkino: 32 32K 
+            Stop Vnukovo: 272 32 32K 
+            Stop Peredelkino: 32K 
+            Stop Solntsevo: 32K 
+            Stop Troparyovo: 272 
+            32 32K 950 
+            32 32K 950 272 
+            32K 950 
 */
 
 /*
@@ -119,7 +161,8 @@ int main() {
                     }
                 }
             }
-            if (count == 0) cout << "No stop" << endl; 
+            if (count == 0) cout << "No stop" << endl;
+            else cout << endl; 
         }
         else if (condition == "STOPS_FOR_BUS") {
             string bus;
@@ -129,8 +172,8 @@ int main() {
             else {
                 for (auto stopOfTheBus: busStopsMap[bus]) {
                     cout << "Stop " << stopOfTheBus << ": ";
+                    flag = false;
                     for (auto kv: busStopsMap) {
-                        flag = false;
                         if (kv.first == bus) continue;
                         else {
                             for (auto stopsOfTheBuses: kv.second) {
