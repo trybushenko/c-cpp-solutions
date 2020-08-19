@@ -2,6 +2,7 @@
 #include <map>
 #include <string>
 #include <algorithm>
+#include <vector>       
 
 /*
 developer: Artem Trybushenko
@@ -14,7 +15,7 @@ using namespace std;
 task: Реализуйте систему хранения автобусных маршрутов. Вам нужно обрабатывать следующие запросы:
 
     NEW_BUS bus stop_count stop1 stop2 ... — добавить маршрут автобуса с названием bus и stop_count остановками с названиями stop1, stop2, ...
-    BUSES_FOR_STOP stop — вывести названия всех маршрутов автобуса, проходящих через остановку stop.
+    BUSES_FOR_STOP bus — вывести названия всех маршрутов автобуса, проходящих через остановку bus.
     STOPS_FOR_BUS bus — вывести названия всех остановок маршрута bus со списком автобусов, на которые можно пересесть на каждой из остановок.
     ALL_BUSES — вывести список всех маршрутов с остановками.
 
@@ -30,13 +31,13 @@ task: Реализуйте систему хранения автобусных 
     Формат вывода
     Для каждого запроса, кроме NEW_BUS, выведите соответствующий ответ на него:
 
-    На запрос BUSES_FOR_STOP stop выведите через пробел список автобусов, проезжающих через эту остановку, в том порядке, 
-    в котором они создавались командами NEW_BUS. Если остановка stop не существует, выведите No stop.
+    На запрос BUSES_FOR_STOP bus выведите через пробел список автобусов, проезжающих через эту остановку, в том порядке, 
+    в котором они создавались командами NEW_BUS. Если остановка bus не существует, выведите No bus.
     На запрос STOPS_FOR_BUS bus выведите описания остановок маршрута bus в отдельных строках в том порядке, 
     в котором они были заданы в соответствующей команде NEW_BUS. 
-    Описание каждой остановки stop должно иметь вид Stop stop: bus1 bus2 ..., где bus1 bus2 ... — список автобусов, 
-    проезжающих через остановку stop, в порядке, в котором они создавались командами NEW_BUS, за исключением исходного маршрута bus. 
-    Если через остановку stop не проезжает ни один автобус, кроме bus, вместо списка автобусов для неё выведите no interchange. 
+    Описание каждой остановки bus должно иметь вид Stop bus: bus1 bus2 ..., где bus1 bus2 ... — список автобусов, 
+    проезжающих через остановку bus, в порядке, в котором они создавались командами NEW_BUS, за исключением исходного маршрута bus. 
+    Если через остановку bus не проезжает ни один автобус, кроме bus, вместо списка автобусов для неё выведите no interchange. 
     Если маршрут bus не существует, выведите No bus.
     На запрос ALL_BUSES выведите описания всех автобусов в алфавитном порядке. 
     Описание каждого маршрута bus должно иметь вид Bus bus: stop1 stop2 ..., где stop1 stop2 ... — список остановок автобуса bus в порядке, 
@@ -61,7 +62,7 @@ task: Реализуйте систему хранения автобусных 
         
         Вывод:
             No buses
-            No stop
+            No bus
             No bus
             32 32K
             Stop Vnukovo: 32 32K 950
@@ -74,7 +75,89 @@ task: Реализуйте систему хранения автобусных 
             Bus 950: Kokoshkino Marushkino Vnukovo Peredelkino Solntsevo Troparyovo
 */
 
+/*
+void printMap(const map<int, vector<string>>& busStopsMap) {
+    for (auto kv: busStopsMap) {
+        cout << kv.first << " : ";
+        for (int i = 0; i < kv.second.size(); i++) {
+            if (i == kv.second.size() - 1) cout << kv.second[i] << "." << endl;
+            else cout << kv.second[i] << ", ";
+        }
+    }
+}
+*/
+
 int main() {
-    
+    int q;
+    cin >> q;
+    map<string, vector<string>> busStopsMap;
+    vector<string> sequenceOfBusesByAdding;
+    string condition;
+    for (int i = 0; i < q; i++) {
+        cin >> condition;
+        if (condition == "NEW_BUS") {
+            string NumberOfTheBus;
+            int numberOfStops;
+            cin >> NumberOfTheBus >> numberOfStops;
+            sequenceOfBusesByAdding.push_back(NumberOfTheBus);
+            string bus;
+            for (int i = 0; i < numberOfStops; i++) {
+                cin >> bus;
+                busStopsMap[NumberOfTheBus].push_back(bus);
+            }
+        }
+        //printMap(busStopsMap);
+        else if (condition == "BUSES_FOR_STOP") {
+            int count = 0;
+            string bus;
+            cin >> bus;
+            for (auto number: sequenceOfBusesByAdding) {
+                for (auto stops: busStopsMap[number]) {
+                    if (stops == bus) {
+                        cout << number << " ";
+                        count++;
+                    }
+                }
+            }
+            if (count == 0) cout << "No stop" << endl; 
+        }
+        else if (condition == "STOPS_FOR_BUS") {
+            string bus;
+            cin >> bus;
+            bool flag;
+            if (busStopsMap.count(bus) == 0) cout << "No bus" << endl;
+            else {
+                for (auto stopOfTheBus: busStopsMap[bus]) {
+                    cout << "Stop " << stopOfTheBus << ": ";
+                    for (auto kv: busStopsMap) {
+                        flag = false;
+                        if (kv.first == bus) continue;
+                        else {
+                            for (auto stopsOfTheBuses: kv.second) {
+                                if (stopOfTheBus == stopsOfTheBuses) {
+                                    cout << kv.first << " ";
+                                    flag = true;
+                                }
+                            }
+                        } 
+                    }
+                    if (flag == false) cout << "no interchange";
+                    cout << endl;
+                }
+            }
+        }   
+        else if (condition == "ALL_BUSES") {
+            if (busStopsMap.size() == 0) cout << "No buses" << endl;
+            else {
+                for (auto kv : busStopsMap) {
+                    cout << "Bus " << kv.first << ": ";
+                    for (auto stop: kv.second) {
+                        cout << stop << " ";
+                    }
+                    cout << endl;
+                }
+            }
+        }
+    }
     return 0;
 }
