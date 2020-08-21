@@ -67,45 +67,23 @@ int main() {
             string word1, word2;
             cin >> word1 >> word2;
             synonyms[word1].insert(word2);
+            synonyms[word2].insert(word1);
         } else if (condition == "COUNT") {
             string word;
-            int count = 0;
             cin >> word;
-            for (auto kv: synonyms) {
-                if (kv.first == word) count++;
-                for (auto synonym: kv.second) {
-                    if (synonym == word) count++;
-                }
-            }
-            cout << count << endl;
-            count = 0;
+            cout << synonyms[word].size() << endl;
         } else if (condition == "CHECK") {
             string word1, word2;
             cin >> word1 >> word2;
-            bool flag = false;
-            if (synonyms.count(word1) == 0 && synonyms.count(word2) == 0) cout << "NO" << endl;
-            else {
-                if (synonyms.count(word2) == 1) {
-                    for (const auto& synonym : synonyms[word2]) {
-                        if (synonym == word1) {
-                            cout << "YES" << endl;
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if (flag == false) cout << "NO" << endl;
-                }
-                else if (synonyms.count(word1) == 1) {
-                    for (const auto& synonym : synonyms[word1]) {
-                        if (synonym == word2) {
-                            cout << "YES" << endl;
-                            flag = true;
-                            break;
-                        }
-                    }
-                    if (flag == false) cout << "NO" << endl;
+            bool flag;
+            for (auto syn : synonyms[word1]) {
+                if (syn == word2) {
+                    cout << "YES" << endl;
+                    flag = true;
                 }
             }
+            if (flag == false) cout << "NO" << endl;
+            flag = false;
         }
     }
     return 0;
