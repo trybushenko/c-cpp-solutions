@@ -89,34 +89,25 @@ class Person {
         string GetFullName(int year) {
             string name, surname, result;
             map<int, string> :: iterator nameIterator, surnameIterator;
-            if (yearAndFirstName.count(year) && yearAndLastName.count(year)) result = yearAndFirstName[year] + ' ' + yearAndLastName[year];
-            else if (!yearAndFirstName.count(year) && yearAndLastName.count(year)) {
-                surname = yearAndLastName[year];
-                nameIterator = yearAndFirstName.lower_bound(year);
-                nameIterator--;
+            nameIterator = yearAndFirstName.lower_bound(year);
+            surnameIterator = yearAndLastName.lower_bound(year);
+            if (nameIterator == yearAndFirstName.end() && surnameIterator == yearAndLastName.end()) result = "Incognito";
+            else if (nameIterator != yearAndFirstName.end() && surnameIterator == yearAndLastName.end()) {
                 name = nameIterator -> second;
-            } else if (!yearAndLastName.count(year) && yearAndFirstName.count(year)) {
-                name = yearAndFirstName[year];
-                surnameIterator = yearAndLastName.lower_bound(year);
-                surnameIterator--;
+                result = name + " with unknown last name";
+            } else if (nameIterator == yearAndFirstName.end() && surnameIterator != yearAndLastName.end()) {
                 surname = surnameIterator -> second;
-            } else if (!yearAndFirstName.count(year) && !yearAndLastName.count(year)) {
-                nameIterator = yearAndFirstName.lower_bound(year);
-                surnameIterator = yearAndLastName.lower_bound(year);
-                nameIterator--;
-                surnameIterator--;
+                result = surname + " with unknown first name";
+            } else {
+                surname = surnameIterator -> second;
                 name = nameIterator -> second;
-                surname = surnameIterator -> second;
+                result = name + ' ' + surname;
             }
-            result = name + ' ' + surname;
-            if (nameIterator -> first == 0 && surnameIterator -> first == 0) result = "Incognito";
-            else if (nameIterator -> first == 0 && surnameIterator -> first != 0) result = surnameIterator -> second + " with unknown first name";
-            else if (nameIterator -> first != 0 && surnameIterator -> first == 0) result = nameIterator -> second + " with unknown last name"; 
             return result;
         }
     private:
-        map<int, string> yearAndFirstName;
-        map<int, string> yearAndLastName;
+        map<int, string, greater<int>> yearAndFirstName;
+        map<int, string, greater<int>> yearAndLastName;
 };
 
 int main() {
