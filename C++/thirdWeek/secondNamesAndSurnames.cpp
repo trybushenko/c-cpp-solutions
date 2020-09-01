@@ -128,16 +128,7 @@ task:   Дополните класс из предыдущей задачи «�
                 Appolinaria Volkova-Sergeeva
 */
 
-vector<string> getAllSurNames(const map<int, string, greater<int>>& mapSurName, int year) {
-  map<int, string, greater<int>> :: iterator surName;
-  vector<string> allSurNames;
-  while(surName != mapSurName.end()) {
-    surName = mapSurName.lower_bound(year);
-    allSurNames.push_back(surName -> second);
-    surName--;
-  }
-  return allSurNames;
-}
+
 
 class Person {
     public:
@@ -167,68 +158,27 @@ class Person {
             return result;
         }
         string GetFullNameWithHistory(int year) {
-          string name, surname, result;
-          map<int, string> :: iterator nameIterator, surnameIterator;
-            nameIterator = yearAndFirstName.lower_bound(year);
-            surnameIterator = yearAndLastName.lower_bound(year);
-            if (nameIterator == yearAndFirstName.end() && surnameIterator == yearAndLastName.end()) result = "Incognito";
-            else if (nameIterator != yearAndFirstName.end() && surnameIterator == yearAndLastName.end()) {
-                name = nameIterator -> second;
-                result = name + " with unknown last name";
-            } else if (nameIterator == yearAndFirstName.end() && surnameIterator != yearAndLastName.end()) {
-                surname = surnameIterator -> second;
-                result = surname + " with unknown first name";
-            } else {
-                surname = surnameIterator -> second;
-                name = nameIterator -> second;
-                result = name + ' ' + surname;
-            }
+          string result, name, surname;     
           vector<string> allNames = getAllSurNames(yearAndFirstName, year);
-          vector<string> allSurNames = getAllSurNames(yearAndLastName, year);
-          if (surnameIterator != yearAndLastName.end() && nameIterator != yearAndFirstName.end()) {
-          if (allNames.size() != 0) {
-            cout << name << "(";
-            for (int i = 0; i < allNames.size();i++) {
-              if (i == allNames.size() - 1) cout << allNames[i] << ")";
-              else cout << allNames[i] << ", ";
-            }
-          } else cout << name << " "; 
-          if (allSurNames.size() != 0) {
-            cout << surname << "(";
-            for (int i = 0; i < allSurNames.size();i++) {
-              if (i == allSurNames.size() - 1) cout << allSurNames[i] << ")";
-              else cout << allSurNames[i] << ", ";
-            }
-          } else cout << surname << " ";
-          cout << endl;
-          } 
-          else if (surnameIterator != yearAndLastName.end() && nameIterator == yearAndFirstName.end()) {
-            if (allSurNames.size() != 0) {
-              cout << surname << "(";
-              for (int i = 0; i < allSurNames.size();i++) {
-                if (i == allSurNames.size() - 1) cout << allSurNames[i] << ")";
-                else cout << allSurNames[i] << ", ";
-              }
-              cout << ")";
-              cout << " with unknown first name"; 
-            } else cout << surname << " with unknown first name";
-          } else if (nameIterator != yearAndFirstName.end() && surnameIterator == yearAndLastName.end()) {
-            if (allNames.size() != 0) {
-              cout << name << "(";
-              for (int i = 0; i < allNames.size();i++) {
-                if (i == allNames.size() - 1) cout << allNames[i] << ")";
-                else cout << allNames[i] << ", ";
-              }
-              cout << ")";
-              cout << " with unknown last name"; 
-            } else cout << name << " with unknown last name";
-          } else {
-            cout << "Incognito" << endl;
-            }
-        }
+          for (const auto& names : allNames) cout << names << " ";
+          return "ah";
+          }
     private:
         map<int, string, greater<int>> yearAndFirstName;
         map<int, string, greater<int>> yearAndLastName;
+
+        vector<string> getAllSurNames(map<int, string, greater<int>>& firstAndLastNames, int& year) {
+          map<int, string, greater<int>> :: iterator surName = firstAndLastNames.lower_bound(year);
+          vector<string> allSurNames;
+          if (surName != firstAndLastNames.end())  {
+            allSurNames.push_back(surName -> second);
+            while(surName != firstAndLastNames.end()) {
+            surName++;
+            allSurNames.push_back(surName -> second);
+            } 
+          }
+          return allSurNames;
+        }
 };
 
 int main() {

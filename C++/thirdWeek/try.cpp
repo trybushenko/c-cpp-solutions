@@ -19,6 +19,9 @@ int main(int argc, const char** argv) {
     mapOfTheSurnames[1931] = "Sraka";
     mapOfTheSurnames[1945] = "QWErty";
     mapOfTheSurnames[1960] = "zxcvbn";
-    for (const auto& str: mapOfTheSurnames) cout << str.first << ':' << str.second << endl;
+    it = mapOfTheSurnames.lower_bound(1946);
+    cout << it -> second << endl;
+    it++;
+    cout << it -> second << endl;
     return 0;
 }   
