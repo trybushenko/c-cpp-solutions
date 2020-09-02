@@ -188,9 +188,22 @@ class Person {
         string getAllSurNames(const map<int, string, greater<int>>& firstAndLastNames, const int& year) {
           string name;
           vector<string> names;
+          vector<string> duplicates;
           for (const auto& kv : firstAndLastNames) {
             if (kv.first <= year) names.push_back(kv.second);
           }
+          //creating a vector of duplicates in the vector called @names@ with type of vector<string>
+            //fix
+          for (int i = 0; i < names.size(); i++) {
+            for (int j = 0; j < names.size(); j++) {
+              if (i == j) continue;
+              else {
+                if (names[i] == names[j]) duplicates.push_back(names[i]);
+              }
+            }
+          }
+            //fix
+          for (const auto& qwert : names) cout << qwert << " ah ";
           if (names.size() == 0) name = " with unknown ";
           else if (names.size() == 1) name = names[0];
           else if (names.size() > 1) {
@@ -207,38 +220,14 @@ class Person {
   };
 
 int main() {
-  Person person;
-  
-  person.ChangeFirstName(1965, "Polina");
-  person.ChangeLastName(1967, "Sergeeva");
-  for (int year : {1900, 1965, 1990}) {
-    cout << person.GetFullNameWithHistory(year) << endl;
-  }
-  
-  person.ChangeFirstName(1970, "Appolinaria");
-  for (int year : {1969, 1970}) {
-    cout << person.GetFullNameWithHistory(year) << endl;
-  }
-  
-  person.ChangeLastName(1968, "Volkova");
-  for (int year : {1969, 1970}) {
-    cout << person.GetFullNameWithHistory(year) << endl;
-  }
-  
-  person.ChangeFirstName(1990, "Polina");
-  person.ChangeLastName(1990, "Volkova-Sergeeva");
-  cout << person.GetFullNameWithHistory(1990) << endl;
-  
-  person.ChangeFirstName(1966, "Pauline");
-  cout << person.GetFullNameWithHistory(1966) << endl;
-  
-  person.ChangeLastName(1960, "Sergeeva");
-  for (int year : {1960, 1967}) {
-    cout << person.GetFullNameWithHistory(year) << endl;
-  }
-  
-  person.ChangeLastName(1961, "Ivanova");
-  cout << person.GetFullNameWithHistory(1967) << endl;
-  
-  return 0;
-}
+                  Person person;
+
+                  person.ChangeFirstName(1900, "Eugene");
+                  person.ChangeLastName(1900, "Sokolov");
+                  person.ChangeLastName(1910, "Sokolov");
+                  person.ChangeFirstName(1920, "Evgeny");
+                  person.ChangeLastName(1930, "Sokolov");
+                  cout << person.GetFullNameWithHistory(1940) << endl;
+
+                  return 0;
+                }
