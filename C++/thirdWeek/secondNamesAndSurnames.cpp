@@ -159,23 +159,25 @@ class Person {
         }
         string GetFullNameWithHistory(int year) {
           string result, name, surname;
+          bool flagName = false, flagSurname = false, flagNo = false;
           if (!yearAndFirstName.size() && !yearAndLastName.size()) result = "Incognito";
-          else if (yearAndFirstName.size() && !yearAndLastName.size()) {
-            name = getAllSurNames(yearAndFirstName, year);
-            surname = " with unknown last name";
-            if (name == " with unknown ") result = "Incognito";
-            else result = name + " " + surname;
-          } else if (yearAndLastName.size() && !yearAndFirstName.size()) {
-            name = " with unknown first name";
-            surname = getAllSurNames(yearAndLastName, year);
-            if (surname == " with unknown ") result = "Incognito";
-            else result = name + ' ' + surname; 
-          } else if (yearAndFirstName.size() && yearAndLastName.size()) {
-            name = getAllSurNames(yearAndFirstName, year);
-            surname = getAllSurNames(yearAndLastName, year);
-            if (name == " with unknown " && surname == " with unknown ") result = "Incognito";
-            else if (name == " with unknown " && surname != " with unknown ") result = surname + name + "first name";
-            else if (surname == " with unknown " && name != " with unknown ") result = name + surname + "last name";
+          else {
+            for (const auto& kv : yearAndFirstName) if (kv.first <= year) flagName = true;
+            for (const auto& kv : yearAndLastName) if (kv.first <= year) flagSurname = true;
+            if (flagName && flagSurname) {
+              name = getAllSurNames(yearAndFirstName, year);
+              surname = getAllSurNames(yearAndLastName, year);
+            } else if (flagName && !flagSurname) {
+              name = getAllSurNames(yearAndFirstName, year);
+              surname = "with unknown last name";
+            } else if (flagSurname && !flagName) {
+              surname = getAllSurNames(yearAndLastName, year);
+              name = "with unknown first name";
+            } else if (!flagName && !flagSurname) {
+              flagNo = true;
+            }
+            if (flagNo) result = "Incognito";
+            else result = name + ' ' + surname;
           }
           return result; 
         }
