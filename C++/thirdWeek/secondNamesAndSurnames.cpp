@@ -2,6 +2,8 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <algorithm>
+
 
 /*
 developer: Artem Trybushenko
@@ -105,6 +107,20 @@ task:   Дополните класс из предыдущей задачи «�
                 Pauline (Polina) Sergeeva
                 Pauline (Polina) Sergeeva (Ivanova, Sergeeva)
 
+            My output :
+              Incognito
+              Polina with unknown last name
+              Polina Sergeeva
+              Polina Sergeeva
+              Appolinaria (Polina) Sergeeva
+              Polina Volkova (Sergeeva)
+              Appolinaria (Polina) Volkova (Sergeeva)
+              Polina (Appolinaria, Polina) Volkova-Sergeeva (Volkova, Sergeeva)
+              Pauline (Polina) with unknown last name
+              Sergeeva with unknown first name
+              Pauline (Polina) Sergeeva (Sergeeva)
+              Pauline (Polina) Sergeeva (Ivanova, Sergeeva)
+
             Пример 3:
                 int main() {
                   Person person;
@@ -159,6 +175,7 @@ class Person {
         }
         string GetFullNameWithHistory(int year) {
           string result, name, surname;
+          bool flagToCheckIfSurname = false;
           bool flagName = false, flagSurname = false, flagNo = false;
           if (!yearAndFirstName.size() && !yearAndLastName.size()) result = "Incognito";
           else {
@@ -173,11 +190,15 @@ class Person {
             } else if (flagSurname && !flagName) {
               surname = getAllSurNames(yearAndLastName, year);
               name = "with unknown first name";
+              flagToCheckIfSurname = true;
             } else if (!flagName && !flagSurname) {
               flagNo = true;
             }
             if (flagNo) result = "Incognito";
-            else result = name + ' ' + surname;
+            else {
+                if (flagToCheckIfSurname) result = surname + ' ' + name;
+                else result = name + ' ' + surname;
+            }
           }
           return result; 
         }
@@ -187,23 +208,25 @@ class Person {
 
         string getAllSurNames(const map<int, string, greater<int>>& firstAndLastNames, const int& year) {
           string name;
+          string prevName = "ah";
+          string curName = "oh";
           vector<string> names;
-          vector<string> duplicates;
           for (const auto& kv : firstAndLastNames) {
-            if (kv.first <= year) names.push_back(kv.second);
-          }
-          //creating a vector of duplicates in the vector called @names@ with type of vector<string>
-            //fix
-          for (int i = 0; i < names.size(); i++) {
-            for (int j = 0; j < names.size(); j++) {
-              if (i == j) continue;
-              else {
-                if (names[i] == names[j]) duplicates.push_back(names[i]);
+            if (kv.first <= year) {
+              if (names.size() == 0) {
+                curName = kv.second;
+                names.push_back(curName);
+              } else {
+                if (prevName == curName) continue;
+                else {
+                  prevName = curName;
+                  curName = kv.second;
+                  names.push_back(curName);
+                }
               }
             }
           }
-            //fix
-          for (const auto& qwert : names) cout << qwert << " ah ";
+          //creating a vector of duplicates in the vector called @names@ with type of vector<string>
           if (names.size() == 0) name = " with unknown ";
           else if (names.size() == 1) name = names[0];
           else if (names.size() > 1) {
@@ -222,12 +245,36 @@ class Person {
 int main() {
                   Person person;
 
-                  person.ChangeFirstName(1900, "Eugene");
-                  person.ChangeLastName(1900, "Sokolov");
-                  person.ChangeLastName(1910, "Sokolov");
-                  person.ChangeFirstName(1920, "Evgeny");
-                  person.ChangeLastName(1930, "Sokolov");
-                  cout << person.GetFullNameWithHistory(1940) << endl;
+                  person.ChangeFirstName(1965, "Polina");
+                  person.ChangeLastName(1967, "Sergeeva");
+                  for (int year : {1900, 1965, 1990}) {
+                    cout << person.GetFullNameWithHistory(year) << endl;
+                  }
+
+                  person.ChangeFirstName(1970, "Appolinaria");
+                  for (int year : {1969, 1970}) {
+                    cout << person.GetFullNameWithHistory(year) << endl;
+                  }
+
+                  person.ChangeLastName(1968, "Volkova");
+                  for (int year : {1969, 1970}) {
+                    cout << person.GetFullNameWithHistory(year) << endl;
+                  }
+
+                  person.ChangeFirstName(1990, "Polina");
+                  person.ChangeLastName(1990, "Volkova-Sergeeva");
+                  cout << person.GetFullNameWithHistory(1990) << endl;
+
+                  person.ChangeFirstName(1966, "Pauline");
+                  cout << person.GetFullNameWithHistory(1966) << endl;
+
+                  person.ChangeLastName(1960, "Sergeeva");
+                  for (int year : {1960, 1967}) {
+                    cout << person.GetFullNameWithHistory(year) << endl;
+                  }
+
+                  person.ChangeLastName(1961, "Ivanova");
+                  cout << person.GetFullNameWithHistory(1967) << endl;
 
                   return 0;
                 }
