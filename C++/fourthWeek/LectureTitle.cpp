@@ -40,44 +40,45 @@ task:   Дана структура LectureTitle:
             Course("White belt")
         );
 */
-
-struct LectureTitle {
-  Specialization specialization;
-  Course course;
-  Week week;
-  explicit LectureTitle(string _specialization, string _course, string _week) {
-      specialization = Specialization(_specialization);
-      course = Course(_course);
-      week = Week(_week);
-  }
-};
-
 struct Specialization {
     string specialization;
-    explicit Specialization(const string& _specialization) {
+    explicit Specialization(string _specialization) {
         specialization = _specialization;
     }
 };
 
 struct Course {
     string course;
-    explicit Course(const string& _course) {
+    explicit Course (string _course) {
         course = _course;
     }
 };
 
 struct Week {
     string week;
-    explicit Week(const string& _week) {
+    explicit Week(string _week) {
         week = _week;
     }
 };
 
+struct LectureTitle {
+  string specialization;
+  string course;
+  string week;
+
+  LectureTitle(Specialization _specialization, Course _course, Week _week) {
+      specialization = _specialization.specialization;
+      course = _course.course;
+      week = _week.week;
+  }
+};
+
 int main() {
     LectureTitle title(
-    Specialization("C++"),
-    Course("White belt"),
-    Week("4th")
-);
+            Specialization("C++"),
+            Course("White belt"),
+            Week("4th")
+        );
+    //cout << title.specialization << " - specialization" << "\n" << title.course << " - course" << "\n" << title.week << " - week";   
     return 0;
 }
