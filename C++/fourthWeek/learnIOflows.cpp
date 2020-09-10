@@ -19,7 +19,7 @@ task:   <fstream> - библиотека для работы с вводом и 
         ofstream output(path, ios::app) appends to the end of the file next lines of the code
         getline(ifstream input(path), string variable, EOF) to read a line and write down to the variable with type string or read till the end of line 
         <iomanip> - library for working with manipulators of input 
-        cout << fixed << setprecision(2);fixed - (<iomanip> library) means to output next all values with standard view, 
+        cout << fixed(instead of 1e-3 outs 0.003) << setprecision(2);fixed - (<iomanip> library) means to output next all values with standard view, 
         setprecision(2)(<iomanip> library) - output first 2 values after comma 
         cout << setw(n) << variable << ' '; (reserving n columns for a variable to output)
         cout << setfill('.'); - fullfill all blank lines with dots
