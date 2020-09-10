@@ -26,7 +26,7 @@ task:   Реализуйте рассказанный на лекции клас
 
         Пример   
 */
-
+/*
 struct Image {
     double quality;
     double freshness;
@@ -38,7 +38,7 @@ struct Params {
     double b;
     double c;
 };
-
+*/
 class FunctionPart {
     private:
         char operation;
@@ -103,10 +103,3 @@ double ComputeQualityByWeight(const Params& params,
     return function.Apply(weight);
 }
 
-int main() {
-  Image image = {10, 2, 6};
-  Params params = {4, 2, 6};
-  cout << ComputeImageWeight(params, image) << endl;
-  cout << ComputeQualityByWeight(params, image, 46) << endl;
-  return 0;
-}
