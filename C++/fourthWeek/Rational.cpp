@@ -70,6 +70,16 @@ task:   В этой задаче вам надо разработать клас
         Гарантируется, что во всех тестах, на которых будет тестироваться ваша реализация, 
         числители и знаменатели ВСЕХ дробей (как исходных, 
         так и получившихся в результате соответствующих арифметических операций) будут укладываться в диапазон типа int.
+
+        Часть 3
+        Аналогично предыдущей части, реализуйте операторы * и /.  
+        Как и в предыдущем случае, гарантируется, что во всех тестах,
+        на которых будет тестироваться ваша реализация, 
+        числители и знаменатели ВСЕХ дробей (как исходных, так и получившихся в результате соответствующих арифметических операций) 
+        будут укладываться в диапазон типа int.
+        Кроме того, гарантируется, что ни в одном из тестов, 
+        на которых будет тестироваться ваша реализация, 
+        не будет выполняться деление на ноль.
 */
 
 class Rational {
@@ -112,7 +122,69 @@ Rational operator-(const Rational& lhs, const Rational& rhs) {
     num = lhs.Numerator() * rhs.Denominator() - rhs.Numerator() * lhs.Denominator();
     return Rational(num, denom);
 }
+
+Rational operator*(const Rational& lhs, const Rational& rhs) {
+    int num = lhs.Numerator() * rhs.Numerator();
+    int denom = lhs.Denominator() * rhs.Denominator();
+    return Rational(num, denom);
+}
+
+Rational operator/(const Rational& lhs, const Rational& rhs) {
+    int num = lhs.Numerator() * rhs.Denominator();
+    int denom = lhs.Denominator() * rhs.Numerator();
+    return Rational(num, denom);
+}
+
 int main() {
+    //проверяем на инициализацию класса и соответствие с тестами
+    {
+        const Rational r(3, 10);
+        if (r.Numerator() != 3 || r.Denominator() != 10) {
+            cout << "Rational(3, 10) != 3/10" << endl;
+            return 1;
+        }
+    }
+
+    {
+        const Rational r(8, 12);
+        if (r.Numerator() != 2 || r.Denominator() != 3) {
+            cout << "Rational(8, 12) != 2/3" << endl;
+            return 2;
+        }
+    }
+
+    {
+        const Rational r(-4, 6);
+        if (r.Numerator() != -2 || r.Denominator() != 3) {
+            cout << "Rational(-4, 6) != -2/3" << endl;
+            return 3;
+        }
+    }
+
+    {
+        const Rational r(4, -6);
+        if (r.Numerator() != -2 || r.Denominator() != 3) {
+            cout << "Rational(4, -6) != -2/3" << endl;
+            return 3;
+        }
+    }
+
+    {
+        const Rational r(0, 15);
+        if (r.Numerator() != 0 || r.Denominator() != 1) {
+            cout << "Rational(0, 15) != 0/1" << endl;
+            return 4;
+        }
+    }
+
+    {
+        const Rational defaultConstructed;
+        if (defaultConstructed.Numerator() != 0 || defaultConstructed.Denominator() != 1) {
+            cout << "Rational() != 0/1" << endl;
+            return 5;
+        }
+    }
+    //проверка на перегрузку операторов +, -, ==
     {
         Rational r1(4, 6);
         Rational r2(2, 3);
@@ -144,7 +216,28 @@ int main() {
             return 3;
         }
     }
+    //проверка на корректную работу прегрузки оператора * и /
+    {
+        Rational a(2, 3);
+        Rational b(4, 3);
+        Rational c = a * b;
+        bool equal = c == Rational(8, 9);
+        if (!equal) {
+            cout << "2/3 * 4/3 != 8/9" << endl;
+            return 1;
+        }
+    }
 
+    {
+        Rational a(5, 4);
+        Rational b(15, 8);
+        Rational c = a / b;
+        bool equal = c == Rational(2, 3);
+        if (!equal) {
+            cout << "5/4 / 15/8 != 2/3" << endl;
+            return 2;
+        }
+    }
 
     cout << "OK" << endl;
     return 0;
