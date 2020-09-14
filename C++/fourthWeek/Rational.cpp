@@ -1,6 +1,10 @@
 #include <iostream>
 #include <string>
-#include <algorithm>    
+#include <sstream>
+#include <map>
+#include <set>
+#include <vector>
+
 /*
 developer: Artem Trybushenko
 language: cpp
@@ -80,8 +84,15 @@ task:   В этой задаче вам надо разработать клас
         Кроме того, гарантируется, что ни в одном из тестов, 
         на которых будет тестироваться ваша реализация, 
         не будет выполняться деление на ноль.
+
+        Часть 4
+        В этой части вам нужно реализовать операторы ввода и вывода для класса Rational. 
+
 */
 
+int gcd (int a, int b) {
+    return b ? gcd (b, a % b) : a;
+}
 class Rational {
     public:
         Rational() {
@@ -89,9 +100,25 @@ class Rational {
             denominator = 1;
         }
         Rational(int _numerator, int _denominator) {
-            int gcd = __gcd(_numerator, _denominator);
-            numerator = _numerator / gcd;
-            denominator = _denominator / gcd;
+            int gcd_ = gcd(abs(_numerator), abs(_denominator));
+            if (gcd_ > 1) {
+                _numerator = _numerator / gcd_;
+                _denominator = _denominator / gcd_;
+            } 
+            if (_numerator < 0 && _denominator < 0) {
+                _numerator = abs(_numerator);
+                _denominator = abs(_denominator);
+            }
+            if (_numerator == 0) {
+                _denominator = 1;
+            }
+
+            if (_numerator < 0 || _denominator < 0) {
+                _numerator = -abs(_numerator);
+                _denominator = abs(_denominator);
+            }
+            numerator = _numerator;
+            denominator = _denominator;
         }
 
         int Numerator() const {
@@ -133,6 +160,28 @@ Rational operator/(const Rational& lhs, const Rational& rhs) {
     int num = lhs.Numerator() * rhs.Denominator();
     int denom = lhs.Denominator() * rhs.Numerator();
     return Rational(num, denom);
+}
+
+ostream& operator<<(ostream& stream,  const Rational& rational) {
+    stream << rational.Numerator() << "/" << rational.Denominator();
+    return stream;
+}
+
+istream& operator>>(istream& stream, Rational& rational) {
+    int num, denom;
+    char slash;
+    if (stream) {
+        if (!(stream >> num)) return stream;
+        stream >> slash;
+        if (!(stream >> denom)) return stream;
+        if (slash == '/') rational = Rational(num, denom);
+    }
+  return stream;
+}
+
+bool operator<(const Rational& lhs, const Rational& rhs) {
+    Rational tmp = lhs - rhs;
+    return tmp.Numerator() < 0;
 }
 
 int main() {
@@ -238,7 +287,74 @@ int main() {
             return 2;
         }
     }
+    //unit-tests for testing overloading cout and cin
+    {
+        ostringstream output;
+        output << Rational(-6, 8);
+        if (output.str() != "-3/4") {
+            cout << "Rational(-6, 8) should be written as \"-3/4\"" << endl;
+            return 1;
+        }
+    }
+
+    {
+        istringstream input("5/7");
+        Rational r;
+        input >> r;
+        bool equal = r == Rational(5, 7);
+        if (!equal) {
+            cout << "5/7 is incorrectly read as " << r << endl;
+            return 2;
+        }
+    }
+
+    {
+        istringstream input("");
+        Rational r;
+        bool correct = !(input >> r);
+        if (!correct) {
+            cout << "Read from empty stream works incorrectly" << endl;
+            return 3;
+        }
+    }
+
+    {
+        istringstream input("5/7 10/8");
+        Rational r1, r2;
+        input >> r1 >> r2;
+        bool correct = r1 == Rational(5, 7) && r2 == Rational(5, 4);
+        if (!correct) {
+            cout << "Multiple values are read incorrectly: " << r1 << " " << r2 << endl;
+            return 4;
+        }
+
+        input >> r1;
+        input >> r2;
+        correct = r1 == Rational(5, 7) && r2 == Rational(5, 4);
+        if (!correct) {
+            cout << "Read from empty stream shouldn't change arguments: " << r1 << " " << r2 << endl;
+            return 5;
+        }
+    }
+
+    {
+        istringstream input1("1*2"), input2("1/"), input3("/4");
+        Rational r1, r2, r3;
+        input1 >> r1;
+        input2 >> r2;
+        input3 >> r3;
+        bool correct = r1 == Rational() && r2 == Rational() && r3 == Rational();
+        if (!correct) {
+            cout << "Reading of incorrectly formatted rationals shouldn't change arguments: "
+                 << r1 << " " << r2 << " " << r3 << endl;
+
+            return 6;
+        }
+    }
+
+    
 
     cout << "OK" << endl;
     return 0;
 }
+
