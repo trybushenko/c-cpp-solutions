@@ -101,7 +101,7 @@ class Rational {
         }
         Rational(int _numerator, int _denominator) {
             if (_denominator == 0) {
-                throw invalid_argument("Division by 0");
+                throw invalid_argument("Invalid argument");
             }
             int gcd_ = gcd(abs(_numerator), abs(_denominator));
             if (gcd_ > 1) {
@@ -163,7 +163,7 @@ Rational operator/(const Rational& lhs, const Rational& rhs) {
     int num = lhs.Numerator() * rhs.Denominator();
     int denom = lhs.Denominator() * rhs.Numerator();
     if (denom == 0) {
-        throw domain_error("Division by 0");
+        throw domain_error("Division by zero");
     }
     return Rational(num, denom);
 }
