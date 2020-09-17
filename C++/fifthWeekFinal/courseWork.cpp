@@ -86,6 +86,23 @@ task:   Необходимо написать программу на С++, ко
                 Части даты не могут быть пустыми, но могут быть нулевыми и даже отрицательными.
 
                 Если формат даты верен, необходимо проверить валидность месяца и дня.
+        
+        Примеры:
+            Add 0-1-2 event1
+            Add 1-2-3 event2
+            Find 0-1-2
+            
+            Del 0-1-2
+            Print
+            Del 1-2-3 event2
+            Del 1-2-3 event2
+
+        Вывод:
+            event1
+            Deleted 1 events
+            0001-02-03 event2
+            Deleted successfully
+            Event not found
 
 */
 
@@ -98,7 +115,7 @@ struct Event {
 };
 class Date {
     public:
-        Date(int _year, unsigned int _month, unsigned int _day) {
+        Date(int _year, int _month, int _day) {
             if (_month > 12 || _month < 1) throw runtime_error("Month value is invalid: " + to_string(_month));
             else {
                 if (_day < 1 || _day > 31) throw runtime_error("Day value is invalid: " + to_string(_day));
@@ -112,17 +129,44 @@ class Date {
         int GetYear() const {return year;}
         int GetMonth() const {return month;}
         int GetDay() const {return day;}
+        void SetYear(int _year) {year = _year;}
+        void SetMonth(int _month) {
+            if (_month > 12 || _month < 1) throw runtime_error("Month value is invalid: " + to_string(_month));
+            else month = _month;
+            }
+        void SetDay(int _day) {
+            if (_day < 1 || _day > 31) throw runtime_error("Day value is invalid: " + to_string(_day));
+            else day = _day;
+        }
     private:
         int year;
         int month;
         int day;
 };
 
-bool operator<(const Date& lhs, const Date& rhs);
+bool EnsureEqualSlashAndSkip(istream& stream) {
+    if (stream.peek() != '-') {
+        throw runtime_error("Invalid ")
+    } 
+}
 
+bool operator<(const Date& lhs, const Date& rhs);
+istream& operator>>(istream& stream, Date& date) {
+    int year, month, day;
+    stream >> year;
+    stream >> month;
+    stream >> day;
+    date.SetYear(year);
+    date.SetMonth(month);
+    date.SetDay(day);
+    return stream;
+
+}
 class Database {
     public:
-        void AddEvent(const Date& date, const string& event);
+        void AddEvent(const Date& date, const string& event) {
+            dateEventMap[date].insert(event);
+        }
         bool DeleteEvent(const Date& date, const string& event);
         int  DeleteDate(const Date& date);
         Date Find(const Date& date) const;
@@ -136,7 +180,7 @@ int main() {
     
   string command;
   while (getline(cin, command)) {
-    // РЎС‡РёС‚Р°Р№С‚Рµ РєРѕРјР°РЅРґС‹ СЃ РїРѕС‚РѕРєР° РІРІРѕРґР° Рё РѕР±СЂР°Р±РѕС‚Р°Р№С‚Рµ РєР°Р¶РґСѓСЋ
+    
   }
 
   return 0;
