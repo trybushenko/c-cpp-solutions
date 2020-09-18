@@ -107,8 +107,8 @@ task:   Необходимо написать программу на С++, ко
 */
 
 struct Event {
-    private : string event;
     public:
+        string event;
         Event(string _event) {
             if (_event != "") event = _event; 
         }
@@ -146,31 +146,73 @@ class Date {
 
 bool EnsureEqualSlashAndSkip(istream& stream) {
     if (stream.peek() != '-') {
-        throw runtime_error("Invalid ")
-    } 
+        throw runtime_error("Invalid argument");
+    }
+    stream.ignore(1); 
 }
 
-bool operator<(const Date& lhs, const Date& rhs);
+bool operator<(const Event& lhs, const Event& rhs) {
+    return lhs.event < rhs.event;
+}
+
+bool operator<(const Date& lhs, const Date& rhs) {
+    if (lhs.GetYear() == rhs.GetYear()) {
+        if (lhs.GetMonth() == rhs.GetMonth) {
+            if (lhs.GetDay() == rhs.GetDay()) return false;
+            else return lhs.GetDay() < rhs.GetDay();
+        }
+        else return lhs.GetMonth() < rhs.GetMonth();
+    } return lhs.GetYear() < rhs.GetYear();
+}
+
 istream& operator>>(istream& stream, Date& date) {
     int year, month, day;
     stream >> year;
+    EnsureEqualSlashAndSkip(stream);
     stream >> month;
+    EnsureEqualSlashAndSkip(stream);
     stream >> day;
-    date.SetYear(year);
-    date.SetMonth(month);
-    date.SetDay(day);
+    EnsureEqualSlashAndSkip(stream);
+    date = Date(year, month, day);
     return stream;
+}
 
+ostream& operator<<(ostream& stream, const Date& date) {
+    stream << setw(4) << setfill('0') << date.GetYear() << '-' 
+           << date.GetMonth() << '-' << date.GetDay();
+    return stream;
 }
 class Database {
     public:
         void AddEvent(const Date& date, const string& event) {
             dateEventMap[date].insert(event);
         }
-        bool DeleteEvent(const Date& date, const string& event);
-        int  DeleteDate(const Date& date);
-        Date Find(const Date& date) const;
-        void Print() const;
+        bool DeleteEvent(const Date& date, const string& event) {
+            set<Event> needed_set = dateEventMap[date];
+            if (needed_set.count(event)) {
+                needed_set.erase(event);
+                cout << "Deleted successfully" << endl;
+            } else cout << "Event not found" << endl; 
+        }
+        int  DeleteDate(const Date& date) {
+            int len = dateEventMap[date].size();
+            dateEventMap.erase(date);
+            cout << "Deleted " << len << " events" << endl;
+        }
+        //todo нужно перегрузить оператор сравнения для структуры Event, - done 
+        //также нужно перегрузить оператор вывода, оператор ввода, оператор сравнения - done для класса Date
+        Date Find(const Date& date) const {
+            if (dateEventMap.count(date) > 0) {
+                for (const auto& event : dateEventMap.at(date)) cout << event << endl;
+            }
+        }
+        void Print() const {
+            for (const auto& kv : dateEventMap) {
+                cout << kv.first << " ";
+                for (const auto& event : kv.second) cout << event << " ";
+                cout << endl;
+            }
+        }
     private:
         map<Date, set<Event>> dateEventMap;
 };
