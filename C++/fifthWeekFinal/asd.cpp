@@ -76,6 +76,6 @@ int main(int argc, const char** argv) {
     Date date1(2020, 10, 18);
     Date date2(2020, 9 ,18);
     bool check = (date2 < date1);
-    cout <<  check << endl;
+    cerr <<  check << endl;
     return 0;
 }

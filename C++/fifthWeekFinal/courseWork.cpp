@@ -5,6 +5,7 @@
 #include <map>
 #include <vector>
 #include <sstream>
+#include <iomanip>
 
 
 /*
@@ -157,7 +158,7 @@ bool operator<(const Event& lhs, const Event& rhs) {
 
 bool operator<(const Date& lhs, const Date& rhs) {
     if (lhs.GetYear() == rhs.GetYear()) {
-        if (lhs.GetMonth() == rhs.GetMonth) {
+        if (lhs.GetMonth() == rhs.GetMonth()) {
             if (lhs.GetDay() == rhs.GetDay()) return false;
             else return lhs.GetDay() < rhs.GetDay();
         }
@@ -177,8 +178,13 @@ istream& operator>>(istream& stream, Date& date) {
     return stream;
 }
 
+ostream& operator<<(ostream& stream, const Event& event) {
+    stream << event.event;
+    return stream;
+}
+
 ostream& operator<<(ostream& stream, const Date& date) {
-    stream << setw(4) << setfill('0') << date.GetYear() << '-' 
+    stream << setfill('0') << setw(4 << date.GetYear()) << '-' 
            << date.GetMonth() << '-' << date.GetDay();
     return stream;
 }
@@ -200,7 +206,7 @@ class Database {
             cout << "Deleted " << len << " events" << endl;
         }
         //todo нужно перегрузить оператор сравнения для структуры Event, - done 
-        //также нужно перегрузить оператор вывода, оператор ввода, оператор сравнения - done для класса Date
+        //также нужно перегрузить оператор вывода - done, оператор ввода, оператор сравнения - done для класса Date
         Date Find(const Date& date) const {
             if (dateEventMap.count(date) > 0) {
                 for (const auto& event : dateEventMap.at(date)) cout << event << endl;
