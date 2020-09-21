@@ -108,117 +108,87 @@ task:   Необходимо написать программу на С++, ко
 */
 
 struct Event {
-    public:
-        string event;
-        Event(string _event) {
-            if (_event != "") event = _event; 
-        }
+    public : string event;
 };
+
 class Date {
     public:
+        Date () {
+            year = 0;
+            month = 1;
+            day = 1;
+        }
+
         Date(int _year, int _month, int _day) {
-            if (_month > 12 || _month < 1) throw runtime_error("Month value is invalid: " + to_string(_month));
-            else {
-                if (_day < 1 || _day > 31) throw runtime_error("Day value is invalid: " + to_string(_day));
-                else {
-                    year = _year;
-                    month = _month;
-                    day = _day; 
-                }
-            }
+            if (_month > 13 || _month < 0) throw runtime_error("Month value is invalid: " + to_string(_month));
+            month = _month;
+            if (_day > 32 || _day < 0) throw runtime_error("Day value is invalid: " + to_string(_day));
+            day = _day;
+            year = _year;
         }
         int GetYear() const {return year;}
         int GetMonth() const {return month;}
         int GetDay() const {return day;}
-        void SetYear(int _year) {year = _year;}
-        void SetMonth(int _month) {
-            if (_month > 12 || _month < 1) throw runtime_error("Month value is invalid: " + to_string(_month));
-            else month = _month;
-            }
-        void SetDay(int _day) {
-            if (_day < 1 || _day > 31) throw runtime_error("Day value is invalid: " + to_string(_day));
-            else day = _day;
-        }
     private:
-        int year;
-        int month;
-        int day;
+        int year, month, day;
+    
 };
 
-bool EnsureEqualSlashAndSkip(istream& stream) {
-    if (stream.peek() != '-') {
-        throw runtime_error("Invalid argument");
-    }
-    stream.ignore(1); 
-}
+bool operator<(const Date& lhs, const Date& rhs);
 
-bool operator<(const Event& lhs, const Event& rhs) {
-    return lhs.event < rhs.event;
-}
-
-bool operator<(const Date& lhs, const Date& rhs) {
-    if (lhs.GetYear() == rhs.GetYear()) {
-        if (lhs.GetMonth() == rhs.GetMonth()) {
-            if (lhs.GetDay() == rhs.GetDay()) return false;
-            else return lhs.GetDay() < rhs.GetDay();
-        }
-        else return lhs.GetMonth() < rhs.GetMonth();
-    } return lhs.GetYear() < rhs.GetYear();
-}
-
-istream& operator>>(istream& stream, Date& date) {
-    int year, month, day;
-    stream >> year;
-    EnsureEqualSlashAndSkip(stream);
-    stream >> month;
-    EnsureEqualSlashAndSkip(stream);
-    stream >> day;
-    EnsureEqualSlashAndSkip(stream);
-    date = Date(year, month, day);
-    return stream;
-}
-
-ostream& operator<<(ostream& stream, const Event& event) {
-    stream << event.event;
-    return stream;
-}
-
-ostream& operator<<(ostream& stream, const Date& date) {
-    stream << setfill('0') << setw(4 << date.GetYear()) << '-' 
-           << date.GetMonth() << '-' << date.GetDay();
-    return stream;
-}
 class Database {
     public:
-        void AddEvent(const Date& date, const string& event) {
-            dateEventMap[date].insert(event);
-        }
-        bool DeleteEvent(const Date& date, const string& event) {
-            set<Event> needed_set = dateEventMap[date];
-            if (needed_set.count(event)) {
-                needed_set.erase(event);
-                cout << "Deleted successfully" << endl;
-            } else cout << "Event not found" << endl; 
-        }
-        int  DeleteDate(const Date& date) {
-            int len = dateEventMap[date].size();
-            dateEventMap.erase(date);
-            cout << "Deleted " << len << " events" << endl;
-        }
-        //todo нужно перегрузить оператор сравнения для структуры Event, - done 
-        //также нужно перегрузить оператор вывода - done, оператор ввода, оператор сравнения - done для класса Date
-        Date Find(const Date& date) const {
-            if (dateEventMap.count(date) > 0) {
-                for (const auto& event : dateEventMap.at(date)) cout << event << endl;
+        void AddEvent(const Date& date, const string& event);
+        bool DeleteEvent(const Date& date, const string& event);
+        int  DeleteDate(const Date& date);
+        bool Find(const Date& date) const;
+        void Print() const;
+
+        void Command(stringstream& stream) {
+            string command;
+            if (stream >> command) {
+                if (command == "Add") {
+                    Event event;
+                    Date date;
+                    if (stream.eof()) return;
+                    stream >> date;
+                    if (stream.eof()) return;
+                    stream >> event;
+                    if (!stream.eof() || event == " " || event == "") {
+                        throw runtime_error("Wrong date format: " + to_string(date));
+                    }
+                    AddEvent(date, event);
+                    return;
+                } else if (command == "Del") {
+                    if (stream.eof()) return;
+                    Date date;
+                    stream >> date;
+                    if (stream.eof()) {
+                        DeleteDate(date);
+                        int len = DeleteDate(date);
+                        cout << "Deleted " << len << " elements" << endl; 
+                        return;
+                    }
+                    Event event;
+                    stream >> event;
+                    if (DeleteEvent(date, event)) {
+                        cout << "Deleted successfully" << endl;
+                    } else cout << "Event not found" << endl;
+                    return;
+                } else if (command == "Find") {
+                    if (stream.eof()) return;
+                    Date date;
+                    stream >> date;
+                    Find(date);
+                    return;
+                } else if (command == "Print") {
+                    Print();
+                    return;
+                } else {
+                    throw runtime_error("Unknown command: " + command);
+                }
             }
-        }
-        void Print() const {
-            for (const auto& kv : dateEventMap) {
-                cout << kv.first << " ";
-                for (const auto& event : kv.second) cout << event << " ";
-                cout << endl;
-            }
-        }
+        } 
     private:
         map<Date, set<Event>> dateEventMap;
 };
@@ -228,7 +198,8 @@ int main() {
     
   string command;
   while (getline(cin, command)) {
-    
+      stringstream stream(command);
+
   }
 
   return 0;
