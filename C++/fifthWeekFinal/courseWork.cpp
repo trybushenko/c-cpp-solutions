@@ -134,15 +134,74 @@ class Date {
     
 };
 
-bool operator<(const Date& lhs, const Date& rhs);
+bool operator<(const Date& lhs, const Date& rhs) {
+    if (lhs.GetYear() == rhs.GetYear()) {
+        if (lhs.GetMonth() == rhs.GetMonth) {
+            if (lhs.GetDay() == rhs.GetDay()) return false;
+            else return lhs.GetDay() < rhs.GetDay();
+        }
+        else return lhs.GetMonth() < rhs.GetMonth();
+    } return lhs.GetYear() < rhs.GetYear();
+}
+
+bool operator<(const Event& lhs, const Event& rhs) {
+    return lhs.event < rhs.event;
+}
+
+istream& operator>>(istream& stream, Date& date) {
+    
+}
+
+ostream& operator<<(ostream& stream, const Date& date) {
+    stream << setw(4) << setfill('0') << date.GetYear() << '-' 
+           << date.GetMonth() << '-' << date.GetDay();
+    return stream;
+}
+
+istream& operator>>(istream& stream, Event& event) {
+    string ev;
+    stream >> ev;
+    event = Event{ev};
+    return stream;
+}
+
+ostream& operator<<(ostream& stream, const Event& event) {
+    stream << event.event;
+    return stream;
+}
+
 
 class Database {
     public:
-        void AddEvent(const Date& date, const string& event);
-        bool DeleteEvent(const Date& date, const string& event);
-        int  DeleteDate(const Date& date);
-        bool Find(const Date& date) const;
-        void Print() const;
+        void AddEvent(const Date& date, const string& event) {dateEventMap[date].insert(event);}
+        bool DeleteEvent(const Date& date, const string& event) {
+            if (dateEventMap[date].count(event)) {
+                dateEventMap[date].erase(event);
+                return true;
+            }
+            return false;
+        }
+        int DeleteDate(const Date& date) {
+            int len = dateEventMap[date].size();
+            dateEventMap.erase(date);
+            return len;
+        }
+        bool Find(const Date& date) const {
+            try {
+                for (const auto& events : dateEventMap.at(date)) cout << events << " ";
+                cout << endl; 
+            } catch(exception& ex) {
+                return false;
+            }
+            return true;
+        }
+        void Print() const {
+            for (const auto& kv : dateEventMap) {
+                cout << kv.first << " ";
+                for (const auto& events : dateEventMap[kv.second]) cout << events << " ";
+                cout << endl;
+            }
+        }
 
         void Command(stringstream& stream) {
             string command;
@@ -198,8 +257,12 @@ int main() {
     
   string command;
   while (getline(cin, command)) {
-      stringstream stream(command);
-
+    try {
+        stringstream stream(command);
+        db.Command(stream);
+    }catch(exception& ex) {
+        cout << ex.what() << endl;
+    }
   }
 
   return 0;
