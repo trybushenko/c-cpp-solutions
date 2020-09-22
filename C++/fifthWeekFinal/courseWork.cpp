@@ -108,7 +108,14 @@ task:   Необходимо написать программу на С++, ко
 */
 
 struct Event {
-    public : string event;
+    public :
+        string event;
+        Event(string _event) {
+            if (_event != "") event = _event;
+        }
+        Event() {
+            event = "";
+        }
 };
 
 class Date {
@@ -129,14 +136,24 @@ class Date {
         int GetYear() const {return year;}
         int GetMonth() const {return month;}
         int GetDay() const {return day;}
+        string DateToString() {
+            return to_string(year) + '-' + to_string(month) + '-' + to_string(day); 
+        }
     private:
         int year, month, day;
     
 };
 
+void TestIfEqualSlash(istream& stream) {
+    if (stream.peek() != '-') {
+        throw runtime_error("Wrong date format");
+    }
+    stream.ignore(1);
+}
+
 bool operator<(const Date& lhs, const Date& rhs) {
     if (lhs.GetYear() == rhs.GetYear()) {
-        if (lhs.GetMonth() == rhs.GetMonth) {
+        if (lhs.GetMonth() == rhs.GetMonth()) {
             if (lhs.GetDay() == rhs.GetDay()) return false;
             else return lhs.GetDay() < rhs.GetDay();
         }
@@ -149,19 +166,26 @@ bool operator<(const Event& lhs, const Event& rhs) {
 }
 
 istream& operator>>(istream& stream, Date& date) {
-    
+    int year, month, day;
+    stream >> year;
+    TestIfEqualSlash(stream);
+    stream >> month;
+    TestIfEqualSlash(stream);
+    stream >> day;
+    date = Date(year, month, day);
+    return stream;
 }
 
 ostream& operator<<(ostream& stream, const Date& date) {
-    stream << setw(4) << setfill('0') << date.GetYear() << '-' 
-           << date.GetMonth() << '-' << date.GetDay();
+    stream << setw(4) << setfill('0') << date.GetYear() << '-' << setw(2) << setfill('0') 
+            << date.GetMonth() << '-' << setw(2) << setfill('0') << date.GetDay();
     return stream;
 }
 
 istream& operator>>(istream& stream, Event& event) {
     string ev;
     stream >> ev;
-    event = Event{ev};
+    event = Event(ev);
     return stream;
 }
 
@@ -170,6 +194,13 @@ ostream& operator<<(ostream& stream, const Event& event) {
     return stream;
 }
 
+bool operator==(const Event& lhs, const Event& rhs) {
+    return lhs.event == rhs.event;
+}
+
+bool operator==(const Event& lhs, const string& rhs) {
+    return lhs.event == rhs;
+}
 
 class Database {
     public:
@@ -186,19 +217,17 @@ class Database {
             dateEventMap.erase(date);
             return len;
         }
-        bool Find(const Date& date) const {
-            try {
-                for (const auto& events : dateEventMap.at(date)) cout << events << " ";
-                cout << endl; 
-            } catch(exception& ex) {
-                return false;
+        set<Event> Find(const Date& date) const {
+            set<Event> value;
+            if (dateEventMap.count(date) > 0) {
+                value = dateEventMap.at(date);
             }
-            return true;
+            return value;
         }
         void Print() const {
             for (const auto& kv : dateEventMap) {
                 cout << kv.first << " ";
-                for (const auto& events : dateEventMap[kv.second]) cout << events << " ";
+                for (const auto& events : kv.second) cout << events << " ";
                 cout << endl;
             }
         }
@@ -213,32 +242,33 @@ class Database {
                     stream >> date;
                     if (stream.eof()) return;
                     stream >> event;
-                    if (!stream.eof() || event == " " || event == "") {
-                        throw runtime_error("Wrong date format: " + to_string(date));
+                    if (!stream.eof() || event == " " || event == "") {//fix
+                        throw runtime_error("Wrong date format: " + date.DateToString());
                     }
-                    AddEvent(date, event);
+                    AddEvent(date, event.event);//fix
                     return;
                 } else if (command == "Del") {
                     if (stream.eof()) return;
                     Date date;
                     stream >> date;
                     if (stream.eof()) {
-                        DeleteDate(date);
                         int len = DeleteDate(date);
-                        cout << "Deleted " << len << " elements" << endl; 
+                        cout << "Deleted " << len << " events" << endl; 
                         return;
                     }
                     Event event;
                     stream >> event;
-                    if (DeleteEvent(date, event)) {
-                        cout << "Deleted successfully" << endl;
-                    } else cout << "Event not found" << endl;
+                    if (DeleteEvent(date, event.event)) {//fix
+                        cout << "Deleted successfully\n";
+                    } else cout << "Event not found\n";
                     return;
                 } else if (command == "Find") {
                     if (stream.eof()) return;
                     Date date;
                     stream >> date;
-                    Find(date);
+                    set<Event> value = Find(date);
+                    for (const auto& val : value) cout << val << " ";
+                    cout << endl;
                     return;
                 } else if (command == "Print") {
                     Print();
