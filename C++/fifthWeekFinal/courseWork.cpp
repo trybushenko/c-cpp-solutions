@@ -127,11 +127,17 @@ class Date {
         }
 
         Date(int _year, int _month, int _day) {
-            if (_month > 13 || _month < 0) throw runtime_error("Month value is invalid: " + to_string(_month));
-            month = _month;
-            if (_day > 32 || _day < 0) throw runtime_error("Day value is invalid: " + to_string(_day));
-            day = _day;
-            year = _year;
+            if (_month > 12 || _month < 1) throw runtime_error("Month value is invalid: " + to_string(_month));
+            else {
+                if (_day > 31 || _day < 1) throw runtime_error("Day value is invalid: " + to_string(_day));
+                else {
+                    month = _month;
+                    day = _day;
+                    year = _year;
+                }
+                
+            }
+            
         }
         int GetYear() const {return year;}
         int GetMonth() const {return month;}
@@ -144,9 +150,16 @@ class Date {
     
 };
 
-void TestIfEqualSlash(istream& stream) {
+string ErrorDate(stringstream& stream) {
+    stringstream ss(stream.str());
+    string s, sErrorDate;
+    ss >> s >> sErrorDate;
+    return sErrorDate;
+}
+
+void TestIfDash(stringstream& stream) {
     if (stream.peek() != '-') {
-        throw runtime_error("Wrong date format");
+        throw runtime_error("Wrong date format: " + ErrorDate(stream) + "\n");//fix
     }
     stream.ignore(1);
 }
@@ -165,12 +178,12 @@ bool operator<(const Event& lhs, const Event& rhs) {
     return lhs.event < rhs.event;
 }
 
-istream& operator>>(istream& stream, Date& date) {
+istream& operator>>(stringstream& stream, Date& date) {
     int year, month, day;
     stream >> year;
-    TestIfEqualSlash(stream);
+    TestIfDash(stream);
     stream >> month;
-    TestIfEqualSlash(stream);
+    TestIfDash(stream);
     stream >> day;
     date = Date(year, month, day);
     return stream;
@@ -226,8 +239,7 @@ class Database {
         }
         void Print() const {
             for (const auto& kv : dateEventMap) {
-                cout << kv.first << " ";
-                for (const auto& events : kv.second) cout << events << " ";
+                for (const auto& events : kv.second) cout << kv.first << " " << events;
                 cout << endl;
             }
         }
@@ -259,16 +271,15 @@ class Database {
                     Event event;
                     stream >> event;
                     if (DeleteEvent(date, event.event)) {//fix
-                        cout << "Deleted successfully\n";
-                    } else cout << "Event not found\n";
+                        cout << "Deleted successfully" << endl;
+                    } else cout << "Event not found" << endl;
                     return;
                 } else if (command == "Find") {
                     if (stream.eof()) return;
                     Date date;
                     stream >> date;
                     set<Event> value = Find(date);
-                    for (const auto& val : value) cout << val << " ";
-                    cout << endl;
+                    for (const auto& val : value) cout << val << endl;
                     return;
                 } else if (command == "Print") {
                     Print();
