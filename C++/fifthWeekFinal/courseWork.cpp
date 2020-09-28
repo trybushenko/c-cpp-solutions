@@ -152,7 +152,7 @@ class Date {
 
 string ErrorDate(stringstream& stream) {
     stringstream ss(stream.str());
-    string s, sErrorDate;
+    string s, sErrorDate, test, asd;
     ss >> s >> sErrorDate;
     return sErrorDate;
 }
@@ -184,7 +184,7 @@ istream& operator>>(stringstream& stream, Date& date) {
     TestIfDash(stream);
     stream >> month;
     TestIfDash(stream);
-    stream >> day;
+    if (!(stream >> day)) throw runtime_error("Wrong date format: " + ErrorDate(stream) + "\n");
     date = Date(year, month, day);
     return stream;
 }
@@ -231,16 +231,18 @@ class Database {
             return len;
         }
         set<Event> Find(const Date& date) const {
-            set<Event> value;
-            if (dateEventMap.count(date) > 0) {
-                value = dateEventMap.at(date);
+            if (dateEventMap.count(date) == 0) {
+                return {};
             }
-            return value;
+            return dateEventMap.at(date);
         }
         void Print() const {
-            for (const auto& kv : dateEventMap) {
-                for (const auto& events : kv.second) cout << kv.first << " " << events;
-                cout << endl;
+            for (const auto& i : dateEventMap) {
+                cout << setfill('0');
+                for (const auto& j : i.second) {
+                    cout << i.first;
+                    cout << " " << j <<  endl;
+                }
             }
         }
 
@@ -255,7 +257,7 @@ class Database {
                     if (stream.eof()) return;
                     stream >> event;
                     if (!stream.eof() || event == " " || event == "") {//fix
-                        throw runtime_error("Wrong date format: " + date.DateToString());
+                        throw runtime_error("Wrong date format: " + ErrorDate(stream) + "\n");
                     }
                     AddEvent(date, event.event);//fix
                     return;
