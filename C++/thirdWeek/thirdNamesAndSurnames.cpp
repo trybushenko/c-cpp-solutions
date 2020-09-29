@@ -86,7 +86,7 @@ class Person {
           bool flagToCheckIfSurname = false;
           bool flagName = false, flagSurname = false, flagNo = false;
           if (!yearAndFirstName.size() && !yearAndLastName.size()) result = "Incognito";
-          else {
+          else {  
             for (const auto& kv : yearAndFirstName) if (kv.first <= year) flagName = true;
             for (const auto& kv : yearAndLastName) if (kv.first <= year) flagSurname = true;
             if (flagName && flagSurname) {
